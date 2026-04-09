@@ -1,0 +1,336 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum Role {
+  PEGAWAI
+  ADMIN_GUDANG
+  EKSEKUTIF
+}
+
+enum JenisBarang {
+  HABIS_PAKAI
+  ASET_TETAP
+}
+
+enum KondisiBarang {
+  BAIK
+  RUSAK_RINGAN
+  RUSAK_BERAT
+  HILANG
+}
+
+enum StatusRequest {
+  MENUNGGU
+  DISETUJUI
+  DITOLAK
+  DISERAHKAN
+}
+
+enum StatusPeminjaman {
+  MENUNGGU
+  DISETUJUI
+  DIPINJAM
+  DIKEMBALIKAN
+  DIBATALKAN
+}
+
+enum StatusTiket {
+  MENUNGGU_PENGECEKAN
+  PROSES_SERVIS
+  SELESAI
+  DITOLAK
+}
+
+// ============================================================
+// MODUL 1: AUTENTIKASI & RBAC
+// ============================================================
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  nip        String?  @unique
+  email      String   @unique
+  password   String
+  role       Role     @default(PEGAWAI)
+  bidangId   String?
+  bidang     Bidang?  @relation(fields: [bidangId], references: [id])
+  avatar     String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  requestBarang  RequestBarang[]
+  peminjaman     Peminjaman[]
+  tiket          TiketKerusakan[]
+  mutasiCreated  MutasiBarang[]
+
+  @@map("users")
+}
+
+// ============================================================
+// MODUL 2: MASTER DATA
+// ============================================================
+
+model Bidang {
+  id          String   @id @default(cuid())
+  kode        String   @unique
+  nama        String
+  deskripsi   String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users         User[]
+  requestBarang RequestBarang[]
+  unitAset      UnitAset[]
+  distribusi    DetailDistribusiAset[]
+
+  @@map("bidang")
+}
+
+model KategoriBarang {
+  id           String   @id @default(cuid())
+  nama         String
+  kodeRekening String?
+  deskripsi    String?
+  createdAt    DateTime @default(now())
+
+  barang Barang[]
+
+  @@map("kategori_barang")
+}
+
+model Barang {
+  id           String      @id @default(cuid())
+  kodeBarang   String      @unique
+  kodeRekening String?
+  nama         String
+  satuan       String
+  jenisBarang  JenisBarang
+  kategoriId   String?
+  kategori     KategoriBarang? @relation(fields: [kategoriId], references: [id])
+  spesifikasi  String?
+  foto         String?
+
+  // Khusus Habis Pakai
+  stokSaatIni  Int     @default(0) @map("stok_saat_ini")
+  minimumStok  Int     @default(0)
+  hargaSatuan  Decimal @default(0) @db.Decimal(15, 2)
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  unitAset      UnitAset[]
+  mutasiMasuk   MutasiBarang[] @relation("BarangMutasiMasuk")
+  mutasiKeluar  MutasiBarang[] @relation("BarangMutasiKeluar")
+  detailRequest DetailRequest[]
+
+  @@map("barang")
+}
+
+model UnitAset {
+  id               String        @id @default(cuid())
+  barangId         String
+  barang           Barang        @relation(fields: [barangId], references: [id])
+  nomorSeri        String?       @unique
+  nomorInventaris  String?       @unique
+  qrCode           String?       @unique
+  tahunPerolehan   Int?
+  nilaiPerolehan   Decimal?      @db.Decimal(15, 2)
+  kondisi          KondisiBarang @default(BAIK)
+  statusPinjam     Boolean       @default(false)
+  bidangId         String?
+  bidang           Bidang?       @relation(fields: [bidangId], references: [id])
+  keterangan       String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  peminjaman Peminjaman[]
+  distribusi DetailDistribusiAset[]
+
+  @@map("unit_aset")
+}
+
+// Audit trail semua pergerakan stok habis pakai
+model MutasiBarang {
+  id              String   @id @default(cuid())
+  barangMasukId   String?
+  barangKeluarId  String?
+  barangMasuk     Barang?  @relation("BarangMutasiMasuk",  fields: [barangMasukId],  references: [id])
+  barangKeluar    Barang?  @relation("BarangMutasiKeluar", fields: [barangKeluarId], references: [id])
+  tanggal         DateTime @default(now())
+  jumlah          Int
+  hargaSatuan     Decimal  @default(0) @db.Decimal(15, 2)
+  keterangan      String?
+  referensiId     String?
+  referensiType   String?  // "REQUEST" | "PENERIMAAN" | "ADJUSTMENT" | "OPNAME"
+  createdById     String?
+  createdBy       User?    @relation(fields: [createdById], references: [id])
+
+  @@map("mutasi_barang")
+}
+
+// ============================================================
+// MODUL 3: REQUEST ATK
+// ============================================================
+
+model RequestBarang {
+  id            String        @id @default(cuid())
+  nomorRequest  String        @unique
+  requesterId   String
+  requester     User          @relation(fields: [requesterId], references: [id])
+  bidangId      String
+  bidang        Bidang        @relation(fields: [bidangId], references: [id])
+  status        StatusRequest @default(MENUNGGU)
+  catatan       String?
+  catatanAdmin  String?
+  tanggalRequest DateTime     @default(now())
+  tanggalApproval DateTime?
+  approvedById  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  detailRequest DetailRequest[]
+
+  @@map("request_barang")
+}
+
+model DetailRequest {
+  id              String        @id @default(cuid())
+  requestId       String
+  request         RequestBarang @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  barangId        String
+  barang          Barang        @relation(fields: [barangId], references: [id])
+  jumlahDiminta   Int
+  jumlahDisetujui Int?
+
+  @@map("detail_request")
+}
+
+// ============================================================
+// MODUL 4: PEMINJAMAN ASET
+// ============================================================
+
+model Peminjaman {
+  id              String           @id @default(cuid())
+  nomorPeminjaman String           @unique
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  unitAsetId      String
+  unitAset        UnitAset         @relation(fields: [unitAsetId], references: [id])
+  status          StatusPeminjaman @default(MENUNGGU)
+  tujuanPeminjaman String
+  tanggalMulai    DateTime
+  tanggalSelesai  DateTime
+  tanggalKembali  DateTime?
+
+  // Kondisi serah terima
+  kondisiAwal     String?
+  kondisiKembali  String?
+  catatanKerusakan String?
+
+  approvedById    String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@map("peminjaman")
+}
+
+// ============================================================
+// MODUL 5: HELPDESK & MAINTENANCE
+// ============================================================
+
+model TiketKerusakan {
+  id           String      @id @default(cuid())
+  nomorTiket   String      @unique
+  userId       String
+  user         User        @relation(fields: [userId], references: [id])
+  judul        String
+  deskripsi    String
+  fotoUrl      String?
+  status       StatusTiket @default(MENUNGGU_PENGECEKAN)
+  prioritas    String      @default("NORMAL") // LOW | NORMAL | HIGH | CRITICAL
+  lokasi       String?
+  catatanAdmin String?
+  resolvedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@map("tiket_kerusakan")
+}
+
+model JadwalMaintenance {
+  id          String   @id @default(cuid())
+  judul       String
+  deskripsi   String?
+  unitAsetId  String?
+  jenisJadwal String   // "PAJAK_KENDARAAN" | "SERVICE_BERKALA" | "KALIBRASI" | "LAINNYA"
+  tanggalJatuhTempo DateTime
+  isSelesai   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("jadwal_maintenance")
+}
+
+// ============================================================
+// MODUL 6: STOCK OPNAME
+// ============================================================
+
+model StockOpname {
+  id          String   @id @default(cuid())
+  nomorOpname String   @unique
+  tanggal     DateTime @default(now())
+  status      String   @default("DRAFT") // DRAFT | FINAL
+  keterangan  String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  detailOpname DetailOpname[]
+
+  @@map("stock_opname")
+}
+
+model DetailOpname {
+  id          String      @id @default(cuid())
+  opnameId    String
+  opname      StockOpname @relation(fields: [opnameId], references: [id], onDelete: Cascade)
+  barangId    String
+  stokSistem  Int
+  stokFisik   Int
+  selisih     Int
+  keterangan  String?
+
+  @@map("detail_opname")
+}
+
+// ============================================================
+// DISTRIBUSI ASET (History lokasi aset)
+// ============================================================
+
+model DetailDistribusiAset {
+  id         String   @id @default(cuid())
+  unitAsetId String
+  unitAset   UnitAset @relation(fields: [unitAsetId], references: [id])
+  bidangId   String
+  bidang     Bidang   @relation(fields: [bidangId], references: [id])
+  tanggal    DateTime @default(now())
+  keterangan String?
+  createdAt  DateTime @default(now())
+
+  @@map("detail_distribusi_aset")
+}
