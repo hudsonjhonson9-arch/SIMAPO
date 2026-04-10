@@ -1,8 +1,20 @@
-// src/app/page.tsx
-// Middleware akan handle redirect ke /login jika belum login
-// Jika sudah login, layout akan handle berdasarkan role
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default function RootPage() {
-  redirect("/login");
+export default async function RootPage() {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  const role = session.user.role;
+
+  if (role === "ADMIN_GUDANG") {
+    redirect("/admin/master-barang");
+  } else if (role === "EKSEKUTIF") {
+    redirect("/eksekutif/dashboard");
+  } else {
+    redirect("/pegawai/request-atk");
+  }
 }
