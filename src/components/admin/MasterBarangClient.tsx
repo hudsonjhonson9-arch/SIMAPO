@@ -151,8 +151,9 @@ export function MasterBarangClient({ initialData, kategoriList }: Props) {
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="table-container">
+        <div className="scroll-shadow-indicator" />
+        <div>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/30">

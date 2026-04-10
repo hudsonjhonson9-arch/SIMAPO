@@ -93,6 +93,35 @@
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  /* Horizontal Table Scroll Improvements */
+  .table-container {
+    @apply relative overflow-x-auto rounded-xl border bg-card shadow-sm transition-all;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-container::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+
+  .table-container::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full hover:bg-muted-foreground/30;
+  }
+
+  /* Shadow indicator for horizontal scroll */
+  .scroll-shadow-indicator {
+    @apply absolute top-0 bottom-16 lg:bottom-0 right-0 w-8 pointer-events-none transition-opacity duration-300;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.03));
+  }
+
+  table {
+    @apply min-w-full border-collapse;
+  }
+
+  th, td {
+    @apply whitespace-nowrap;
+  }
 }
 
 @keyframes fade-in {

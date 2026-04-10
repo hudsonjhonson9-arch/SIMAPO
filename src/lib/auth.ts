@@ -67,12 +67,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.id as string;
-        (session.user as unknown as { role: Role }).role = token.role as Role;
-        (session.user as unknown as { nip?: string }).nip = token.nip as string | undefined;
-        (session.user as unknown as { bidangId?: string }).bidangId = token.bidangId as string | undefined;
-        (session.user as unknown as { bidangNama?: string }).bidangNama = token.bidangNama as string | undefined;
+      if (session.user && token.id) {
+        const user = await db.user.findUnique({
+          where: { id: token.id as string },
+          include: { bidang: { select: { nama: true } } },
+        });
+
+        if (user) {
+          session.user.id = user.id;
+          session.user.name = user.name;
+          session.user.email = user.email;
+          (session.user as any).role = user.role;
+          (session.user as any).nip = user.nip || undefined;
+          (session.user as any).bidangId = user.bidangId || undefined;
+          (session.user as any).bidangNama = user.bidang?.nama || undefined;
+          (session.user as any).avatar = user.avatar || undefined;
+        }
       }
       return session;
     },
