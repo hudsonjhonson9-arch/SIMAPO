@@ -76,7 +76,7 @@ export function Sidebar({ role, userName, bidangNama }: SidebarProps) {
   const navItems = navByRole[role];
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-sidebar h-screen flex flex-col border-r border-sidebar-border">
+    <aside className="hidden lg:flex w-64 flex-shrink-0 bg-sidebar h-screen flex-col border-r border-sidebar-border">
       {/* Logo */}
       <div className="p-5 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
