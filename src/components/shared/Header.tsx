@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Bell, Menu, User } from "lucide-react";
 import { useSession } from "next-auth/react";
