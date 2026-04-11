@@ -16,7 +16,7 @@ interface Props {
 const ROLE_INFO: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PEGAWAI:      { label: "Pegawai",      color: "bg-gray-100 text-gray-700",    icon: <User className="w-3 h-3" />    },
   ADMIN_GUDANG: { label: "Admin Gudang", color: "bg-blue-100 text-blue-700",    icon: <Shield className="w-3 h-3" />  },
-  EKSEKUTIF:    { label: "Kepala Dinas", color: "bg-purple-100 text-purple-700", icon: <Crown className="w-3 h-3" /> },
+  EKSEKUTIF:    { label: "Kepala Badan", color: "bg-purple-100 text-purple-700", icon: <Crown className="w-3 h-3" /> },
 };
 
 export function PenggunaClient({ users, bidangList }: Props) {
@@ -186,7 +186,7 @@ export function PenggunaClient({ users, bidangList }: Props) {
                     className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background">
                     <option value="PEGAWAI">Pegawai</option>
                     <option value="ADMIN_GUDANG">Admin Gudang</option>
-                    <option value="EKSEKUTIF">Kepala Dinas</option>
+                    <option value="EKSEKUTIF">Kepala Badan</option>
                   </select>
                 </div>
               </div>

@@ -16,9 +16,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SIMAPO — Sistem Manajemen Aset & Persediaan Operasional",
   description:
-    "Sistem Manajemen Aset dan Persediaan Operasional Instansi Pemerintah — pelengkap SIPD",
+    "Sistem Manajemen Aset dan Persediaan Operasional Badan Perencanaan Pembangunan Riset dan Inovasi Daerah Kabupaten Sumba Barat — pelengkap SIPD",
 };
 
 export default function RootLayout({

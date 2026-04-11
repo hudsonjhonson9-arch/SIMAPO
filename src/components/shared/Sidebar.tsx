@@ -59,11 +59,7 @@ const navByRole: Record<Role, NavItem[]> = {
   EKSEKUTIF:    eksekutifNav,
 };
 
-const roleLabel: Record<Role, string> = {
-  ADMIN_GUDANG: "Admin Gudang",
-  PEGAWAI:      "Pegawai",
-  EKSEKUTIF:    "Kepala Dinas",
-};
+  EKSEKUTIF:    "Kepala Badan",
 
 interface SidebarProps {
   role: Role;

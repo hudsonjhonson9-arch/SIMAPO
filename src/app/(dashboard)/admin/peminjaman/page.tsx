@@ -18,7 +18,7 @@ export default async function AdminPeminjamanPage() {
     <div className="flex flex-col h-full overflow-hidden">
       <Header
         title="Kelola Peminjaman Aset"
-        subtitle="Approve dan kelola serah terima aset dinas"
+        subtitle="Approve dan kelola serah terima aset badan"
       />
       <main className="flex-1 overflow-y-auto p-6">
         <AdminPeminjamanClient peminjaman={peminjaman} />

@@ -156,8 +156,8 @@ export default function LoginForm() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-blue-400/40 mt-6">
-          © 2025 SIMAPO — Instansi Pemerintah Daerah
+        <p className="text-center text-xs text-blue-400/40 mt-6 px-4 leading-relaxed">
+          © 2025 SIMAPO — Badan Perencanaan Pembangunan Riset dan Inovasi Daerah Kabupaten Sumba Barat
         </p>
       </div>
     </div>

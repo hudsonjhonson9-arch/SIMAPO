@@ -27,7 +27,7 @@ export default async function PeminjamanPage() {
     <div className="flex flex-col h-full overflow-hidden">
       <Header
         title="Peminjaman Aset"
-        subtitle="Pinjam kendaraan dinas, laptop, proyektor, dan aset lainnya"
+        subtitle="Pinjam kendaraan daerah, laptop, proyektor, dan aset lainnya"
       />
       <main className="flex-1 overflow-y-auto p-6">
         <PeminjamanClient asetTersedia={asetTersedia} riwayat={riwayatPeminjaman} />

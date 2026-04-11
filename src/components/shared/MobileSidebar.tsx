@@ -34,7 +34,7 @@ const pegawaiNav: NavItem[] = [
 ];
 
 const eksekutifNav: NavItem[] = [
-  { href: "/eksekutif/dashboard",  label: "Dashboard Eksekutif", icon: <Building2 className="w-4 h-4" /> },
+  { href: "/eksekutif/dashboard",  label: "Dashboard Kepala Badan", icon: <Building2 className="w-4 h-4" /> },
   { href: "/eksekutif/laporan",    label: "Laporan Mutasi",      icon: <Building2 className="w-4 h-4" /> },
 ];
 
