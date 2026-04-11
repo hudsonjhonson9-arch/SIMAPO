@@ -133,7 +133,7 @@ export default async function EksekutifDashboard() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <Header
-        title="Dashboard Eksekutif"
+        title="Dashboard Kepala Badan"
         subtitle="Ringkasan kondisi aset dan persediaan instansi"
       />
       <main className="flex-1 overflow-y-auto p-6 space-y-6">

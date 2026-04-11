@@ -49,7 +49,7 @@ const pegawaiNav: NavItem[] = [
 ];
 
 const eksekutifNav: NavItem[] = [
-  { href: "/eksekutif/dashboard",  label: "Dashboard Eksekutif", icon: <LayoutDashboard className="w-4 h-4" /> },
+  { href: "/eksekutif/dashboard",  label: "Dashboard Kepala Badan", icon: <LayoutDashboard className="w-4 h-4" /> },
   { href: "/eksekutif/laporan",    label: "Laporan Mutasi",      icon: <BarChart3 className="w-4 h-4" /> },
 ];
 
@@ -59,7 +59,11 @@ const navByRole: Record<Role, NavItem[]> = {
   EKSEKUTIF:    eksekutifNav,
 };
 
+const roleLabel: Record<Role, string> = {
+  ADMIN_GUDANG: "Admin Gudang",
+  PEGAWAI:      "Pegawai",
   EKSEKUTIF:    "Kepala Badan",
+};
 
 interface SidebarProps {
   role: Role;
