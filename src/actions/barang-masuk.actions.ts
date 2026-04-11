@@ -12,6 +12,15 @@ const barangMasukSchema = z.object({
   hargaSatuan:  z.coerce.number().min(0, "Harga tidak valid"),
   keterangan:   z.string().optional(),
   tanggal:      z.string().optional(),
+  
+  // SIPD & Procurement fields
+  penyedia:           z.string().optional(),
+  tanggalKwitansi:    z.string().optional(),
+  tanggalBeritaAcara: z.string().optional(),
+  noBeritaAcara:      z.string().optional(),
+  noBKU:              z.string().optional(),
+  kodeSubKegiatan:    z.string().optional(),
+  kodeBelanja:        z.string().optional(),
 });
 
 export async function addBarangMasuk(formData: FormData) {
@@ -44,6 +53,15 @@ export async function addBarangMasuk(formData: FormData) {
           referensiType: "PENERIMAAN",
           tanggal: parsed.data.tanggal ? new Date(parsed.data.tanggal) : new Date(),
           createdById: (session.user as { id: string }).id,
+
+          // Metadata pengadaan
+          penyedia:           parsed.data.penyedia,
+          tanggalKwitansi:    parsed.data.tanggalKwitansi ? new Date(parsed.data.tanggalKwitansi) : null,
+          tanggalBeritaAcara: parsed.data.tanggalBeritaAcara ? new Date(parsed.data.tanggalBeritaAcara) : null,
+          noBeritaAcara:      parsed.data.noBeritaAcara,
+          noBKU:              parsed.data.noBKU,
+          kodeSubKegiatan:    parsed.data.kodeSubKegiatan,
+          kodeBelanja:        parsed.data.kodeBelanja,
         },
       });
     });

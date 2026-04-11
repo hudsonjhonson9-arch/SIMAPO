@@ -39,6 +39,7 @@ const adminNav: NavItem[] = [
   { href: "/admin/helpdesk",       label: "Helpdesk & Tiket",    icon: <Wrench className="w-4 h-4" /> },
   { href: "/admin/stock-opname",   label: "Stock Opname",        icon: <QrCode className="w-4 h-4" /> },
   { href: "/admin/laporan",        label: "Laporan & Export",    icon: <FileText className="w-4 h-4" /> },
+  { href: "/admin/pemeliharaan",   label: "Kartu Pemeliharaan",  icon: <Wrench className="w-4 h-4" /> },
   { href: "/admin/pengguna",       label: "Kelola Pengguna",     icon: <Users className="w-4 h-4" /> },
 ];
 

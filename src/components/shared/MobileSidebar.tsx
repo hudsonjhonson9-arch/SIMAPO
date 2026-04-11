@@ -24,6 +24,7 @@ const adminNav: NavItem[] = [
   { href: "/admin/helpdesk",       label: "Helpdesk & Tiket",    icon: <Building2 className="w-4 h-4" /> },
   { href: "/admin/stock-opname",   label: "Stock Opname",        icon: <Building2 className="w-4 h-4" /> },
   { href: "/admin/laporan",        label: "Laporan & Export",    icon: <Building2 className="w-4 h-4" /> },
+  { href: "/admin/pemeliharaan",   label: "Kartu Pemeliharaan",  icon: <Building2 className="w-4 h-4" /> },
   { href: "/admin/pengguna",       label: "Kelola Pengguna",     icon: <Building2 className="w-4 h-4" /> },
 ];
 

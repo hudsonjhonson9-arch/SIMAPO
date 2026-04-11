@@ -137,6 +137,7 @@ model Barang {
   mutasiMasuk   MutasiBarang[] @relation("BarangMutasiMasuk")
   mutasiKeluar  MutasiBarang[] @relation("BarangMutasiKeluar")
   detailRequest DetailRequest[]
+  detailPemeliharaan DetailPemeliharaan[]
 
   @@map("barang")
 }
@@ -155,11 +156,17 @@ model UnitAset {
   bidangId         String?
   bidang           Bidang?       @relation(fields: [bidangId], references: [id])
   keterangan       String?
+
+  // SIPD Support
+  kodeSubKegiatan  String?
+  kodeBelanja      String?
+
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  peminjaman Peminjaman[]
-  distribusi DetailDistribusiAset[]
+  peminjaman  Peminjaman[]
+  distribusi  DetailDistribusiAset[]
+  pemeliharaan RiwayatPemeliharaan[]
 
   @@map("unit_aset")
 }
@@ -176,9 +183,18 @@ model MutasiBarang {
   hargaSatuan     Decimal  @default(0) @db.Decimal(15, 2)
   keterangan      String?
   referensiId     String?
-  referensiType   String?  // "REQUEST" | "PENERIMAAN" | "ADJUSTMENT" | "OPNAME"
+  referensiType   String?  // "REQUEST" | "PENERIMAAN" | "ADJUSTMENT" | "OPNAME" | "MAINTENANCE"
   createdById     String?
   createdBy       User?    @relation(fields: [createdById], references: [id])
+
+  // SIPD & Procurement Fields
+  penyedia            String?
+  tanggalKwitansi     DateTime?
+  tanggalBeritaAcara  DateTime?
+  noBeritaAcara       String?
+  noBKU               String?
+  kodeSubKegiatan     String?
+  kodeBelanja         String?
 
   @@map("mutasi_barang")
 }
@@ -333,4 +349,38 @@ model DetailDistribusiAset {
   createdAt  DateTime @default(now())
 
   @@map("detail_distribusi_aset")
+}
+
+// ============================================================
+// MODUL PEMELIHARAAN (KARTU PEMELIHARAAN)
+// ============================================================
+
+model RiwayatPemeliharaan {
+  id              String   @id @default(cuid())
+  unitAsetId      String
+  unitAset        UnitAset @relation(fields: [unitAsetId], references: [id])
+  tanggal         DateTime @default(now())
+  kegiatan        String   // Nama/Jenis pemeliharaan
+  biayaTotal      Decimal  @default(0) @db.Decimal(15, 2)
+  petugas         String?  // Nama teknisi atau vendor
+  catatan         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  detailPemeliharaan DetailPemeliharaan[]
+
+  @@map("riwayat_pemeliharaan")
+}
+
+model DetailPemeliharaan {
+  id               String              @id @default(cuid())
+  riwayatId        String
+  riwayat          RiwayatPemeliharaan @relation(fields: [riwayatId], references: [id], onDelete: Cascade)
+  barangId         String?             // Jika mengambil suku cadang dari stok
+  barang           Barang?             @relation(fields: [barangId], references: [id])
+  namaItem         String?             // Nama item jika beli di luar (tidak ada di master)
+  jumlah           Int                 @default(1)
+  hargaSatuan      Decimal             @default(0) @db.Decimal(15, 2)
+
+  @@map("detail_pemeliharaan")
 }
